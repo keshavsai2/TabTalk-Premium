@@ -1,0 +1,486 @@
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        :root {
+            --primary: #5b86e5;
+            --secondary: #ff7e5f;
+            --bg-light: rgba(255, 255, 255, 0.6);
+            --bg-dark: rgba(30, 33, 40, 0.7);
+            --text-light: #1e2128;
+            --text-dark: #f0f2f5;
+            --message-bg: #eef2f7;
+            --message-bg-dark: #2c3140;
+            --my-message-bg: linear-gradient(135deg, #5b86e5 0%, #36d1dc 100%);
+            --my-message-bg-dark: linear-gradient(135deg, #5b86e5 0%, #36d1dc 100%);
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            /* This sets the image as the background for the whole page */
+            background-image: url('https://images.unsplash.com/photo-1530099486328-e021101a494a?auto=format&fit=crop&w=2574&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            color: var(--text-light);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+        body.dark {
+            color: var(--text-dark);
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            height: 90vh;
+            max-height: 800px;
+            margin: 20px;
+            /* This semi-transparent background creates the "glass" effect */
+            background: var(--bg-light);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 var(--shadow);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            overflow: hidden;
+            transition: background 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        body.dark .container {
+            background: var(--bg-dark);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px;
+            background: transparent;
+            color: var(--text-light);
+        }
+        body.dark .header { color: var(--text-dark); }
+        .header .title {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        .edit-username-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-left: 10px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .edit-username-btn:hover {
+            opacity: 1;
+        }
+        body.dark .edit-username-btn {
+            color: var(--text-dark);
+        }
+        .header .theme-switch {
+            cursor: pointer;
+            font-size: 1.2rem;
+            background: none;
+            border: none;
+            color: var(--text-light);
+        }
+        body.dark .header .theme-switch { color: var(--text-dark); }
+        .chat-area {
+            flex: 1;
+            padding: 18px 24px;
+            height: auto;
+            overflow-y: auto;
+            background: transparent;
+            transition: background 0.3s;
+            scroll-behavior: smooth;
+            display: flex;
+            flex-direction: column;
+        }
+        body.dark .chat-area {
+            background: transparent;
+        }
+        .message {
+            padding: 12px 16px;
+            border-radius: 18px;
+            margin-bottom: 16px;
+            max-width: 80%;
+            align-self: flex-start;
+            background: var(--message-bg);
+            /* New, cleaner animation for incoming messages */
+            animation: fadeInUp 0.4s ease-out;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+        body.dark .message {
+            background: var(--message-bg-dark);
+        }
+        .message.my {
+            align-self: flex-end;
+            background: var(--my-message-bg);
+            color: #fff;
+            /* Special animation for your own messages */
+            animation: fadeInRight 0.4s ease-out;
+        }
+        body.dark .message.my {
+            background: var(--my-message-bg-dark);
+        }
+        .meta {
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: var(--primary);
+        }
+        .message.my .meta {
+            color: #fff;
+        }
+        .text {
+            font-size: 1rem;
+            margin-bottom: 6px;
+        }
+        .reactions {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .reaction-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+        .reaction-btn.active {
+            transform: scale(1.2);
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+        }
+        body.dark .reaction-btn.active {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        .reaction-btn:hover {
+            transform: scale(1.2);
+        }
+        .search-bar {
+            width: calc(100% - 48px);
+            margin: 0 24px 10px;
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            background: rgba(0,0,0,0.05);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .search-bar:focus {
+            border-color: var(--primary);
+            background: rgba(255,255,255,0.8);
+        }
+        body.dark .search-bar {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-dark);
+        }
+        body.dark .search-bar:focus {
+            background: rgba(0,0,0,0.2);
+        }
+        .form-area {
+            display: flex;
+            gap: 8px;
+            padding: 18px 24px;
+            background: transparent;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+        body.dark .form-area {
+            background: transparent;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .form-area input, .form-area button {
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        .form-area input {
+            flex: 1;
+        }
+        .form-area button {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .form-area button:hover {
+            background: var(--secondary);
+        }
+        .emoji-picker {
+            position: absolute;
+            bottom: 60px;
+            left: 24px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #0002;
+            padding: 8px;
+            display: none;
+            z-index: 10;
+        }
+        body.dark .emoji-picker {
+            background: #23272f;
+            border-color: #444;
+        }
+        .emoji-picker span {
+            cursor: pointer;
+            font-size: 1.2rem;
+            margin: 4px;
+        }
+        .clear-btn {
+            background: var(--secondary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-left: 8px;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <span class="title">TabTalk Premium</span>
+                <button class="edit-username-btn" id="edit-username-btn" title="Edit username">✏️</button>
+            </div>
+            <button class="theme-switch" id="theme-switch" title="Switch theme">🌙</button>
+        </div>
+        <input type="text" class="search-bar" id="search-bar" placeholder="Search messages...">
+        <div class="chat-area" id="chat-area"></div>
+        <div class="form-area">
+            <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off">
+            <button id="emoji-btn" title="Pick emoji">😊</button>
+            <button id="send-btn">Send</button>
+            <button class="clear-btn" id="clear-btn" title="Clear chat">Clear</button>
+        </div>
+        <div class="emoji-picker" id="emoji-picker">
+            <span>😀</span><span>😂</span><span>😍</span><span>👍</span><span>🙏</span><span>🎉</span><span>❤️</span><span>😎</span><span>🔥</span><span>🥳</span>
+        </div>
+    </div>
+    <script>
+        // --- Setup ---
+        const chatArea = document.getElementById('chat-area');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const emojiBtn = document.getElementById('emoji-btn');
+        const emojiPicker = document.getElementById('emoji-picker');
+        const clearBtn = document.getElementById('clear-btn');
+        const searchBar = document.getElementById('search-bar');
+        const themeSwitch = document.getElementById('theme-switch');
+        const editUsernameBtn = document.getElementById('edit-username-btn');
+        const MESSAGES_KEY = 'tabtalk_premium_messages';
+        const REACTIONS_KEY = 'tabtalk_premium_reactions';
+        const REACTION_TYPES = ['like', 'dislike', '😂', '❤️'];
+
+        // --- Username per tab ---
+        let username = sessionStorage.getItem('tabtalk_username');
+        if (!username) {
+            username = prompt('Enter your username:', `User${Math.floor(Math.random()*1000)}`) || `User${Math.floor(Math.random()*1000)}`;
+            sessionStorage.setItem('tabtalk_username', username);
+        }
+
+        // --- Edit Username ---
+        editUsernameBtn.onclick = () => {
+            const newUsername = prompt('Enter your new username:', username);
+            if (newUsername && newUsername.trim() !== '') {
+                username = newUsername.trim();
+                sessionStorage.setItem('tabtalk_username', username);
+                renderMessages(searchBar.value); // Re-render to update message ownership
+            }
+        };
+
+        // --- Load messages ---
+        function getMessages() {
+            return JSON.parse(localStorage.getItem(MESSAGES_KEY)) || [];
+        }
+        function saveMessages(messages) {
+            localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages));
+        }
+        function getReactions() {
+            return JSON.parse(localStorage.getItem(REACTIONS_KEY)) || {};
+        }
+        function saveReactions(reactions) {
+            localStorage.setItem(REACTIONS_KEY, JSON.stringify(reactions));
+        }
+
+        // --- Render messages ---
+        function renderMessages(filter='') {
+            // Check if user is scrolled to the bottom before re-rendering
+            const wasScrolledToBottom = chatArea.scrollHeight - chatArea.clientHeight <= chatArea.scrollTop + 1;
+            chatArea.innerHTML = '';
+            const messages = getMessages();
+            const reactions = getReactions();
+            messages.filter(msg => msg.text.toLowerCase().includes(filter.toLowerCase()))
+                .forEach((msg, idx) => {
+                const div = document.createElement('div');
+                div.className = 'message' + (msg.user === username ? ' my' : '');
+                
+                let userReacted = '';
+                for (const reactionType of REACTION_TYPES) {
+                    if (reactions[idx]?.[reactionType]?.includes(username)) {
+                        userReacted = reactionType;
+                        break;
+                    }
+                }
+                div.innerHTML = `
+                    <div class="meta">${msg.user} • ${new Date(msg.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div>
+                    <div class="text">${msg.text}</div>
+                    <div class="reactions" id="reactions-${idx}">
+                        <button class="reaction-btn${userReacted==='like'?' active':''}" data-idx="${idx}" data-emoji="like">👍 <span>${reactions[idx]?.like?.length||0}</span></button>
+                        <button class="reaction-btn${userReacted==='dislike'?' active':''}" data-idx="${idx}" data-emoji="dislike">👎 <span>${reactions[idx]?.dislike?.length||0}</span></button>
+                        <button class="reaction-btn${userReacted==='😂'?' active':''}" data-idx="${idx}" data-emoji="😂">😂 <span>${reactions[idx]?.['😂']?.length||0}</span></button>
+                        <button class="reaction-btn${userReacted==='❤️'?' active':''}" data-idx="${idx}" data-emoji="❤️">❤️ <span>${reactions[idx]?.['❤️']?.length||0}</span></button>
+                    </div>
+                `;
+                chatArea.appendChild(div);
+            });
+
+            // Only scroll to bottom if they were already there
+            if (wasScrolledToBottom) {
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+        }
+
+        // --- Send message ---
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            if (text) {
+                const messages = getMessages();
+                messages.push({user: username, text, timestamp: new Date().toISOString()});
+                saveMessages(messages);
+                renderMessages(searchBar.value);
+                messageInput.value = '';
+                // Always scroll to bottom after sending a new message
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+        }
+        sendBtn.onclick = sendMessage;
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Prevents line break in input
+                sendMessage();
+            }
+        });
+
+        // --- Emoji picker ---
+        emojiBtn.onclick = (e) => {
+            emojiPicker.style.display = emojiPicker.style.display === 'block' ? 'none' : 'block';
+        };
+        emojiPicker.onclick = (e) => {
+            if (e.target.tagName === 'SPAN') {
+                messageInput.value += e.target.textContent;
+                emojiPicker.style.display = 'none';
+                messageInput.focus();
+            }
+        };
+        document.body.onclick = (e) => {
+            if (!emojiPicker.contains(e.target) && e.target !== emojiBtn) {
+                emojiPicker.style.display = 'none';
+            }
+        };
+
+        // --- Reactions ---
+        chatArea.onclick = (e) => {
+            // Use .closest() to make the whole button clickable, not just the icon
+            const reactionBtn = e.target.closest('.reaction-btn');
+            if (reactionBtn) {
+                const idx = reactionBtn.dataset.idx;
+                const emoji = reactionBtn.dataset.emoji;
+                const reactions = getReactions();
+                reactions[idx] = reactions[idx] || {};
+
+                const userHasReactedWithThis = reactions[idx][emoji]?.includes(username);
+
+                // Remove user from all other reactions for this message
+                REACTION_TYPES.forEach(type => {
+                    if (reactions[idx][type]) {
+                        reactions[idx][type] = reactions[idx][type].filter(u => u !== username);
+                    }
+                });
+
+                // If it's a new reaction (or a switch), add it.
+                // If it was a toggle-off, we don't add it back.
+                if (!userHasReactedWithThis) {
+                    reactions[idx][emoji] = reactions[idx][emoji] || [];
+                    reactions[idx][emoji].push(username);
+                }
+
+                saveReactions(reactions);
+                renderMessages(searchBar.value);
+            }
+        };
+
+        // --- Search ---
+        searchBar.oninput = () => {
+            renderMessages(searchBar.value);
+        };
+
+
+        // --- Clear chat ---
+        clearBtn.onclick = () => {
+            if (confirm('Clear all messages? This cannot be undone.')) {
+                localStorage.removeItem(MESSAGES_KEY);
+                localStorage.removeItem(REACTIONS_KEY);
+                renderMessages(searchBar.value);
+            }
+        };
+
+        // --- Theme switch ---
+        themeSwitch.onclick = () => {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            themeSwitch.textContent = isDark ? '☀️' : '🌙';
+            // Save theme choice so it persists
+            localStorage.setItem('tabtalk_theme', isDark ? 'dark' : 'light');
+        };
+
+        function applyInitialTheme() {
+            const savedTheme = localStorage.getItem('tabtalk_theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                themeSwitch.textContent = '☀️';
+            }
+        }
+
+        // --- Real-time sync between tabs ---
+        window.addEventListener('storage', (event) => {
+            // When messages, reactions, or theme change in another tab, update this one
+            if (event.key === MESSAGES_KEY || event.key === REACTIONS_KEY) {
+                renderMessages(searchBar.value);
+            }
+            if (event.key === 'tabtalk_theme') {
+                applyInitialTheme();
+            }
+        });
+
+        // --- Initial load ---
+        applyInitialTheme();
+        renderMessages();
+        chatArea.scrollTop = chatArea.scrollHeight;
+    </script>
+</body>
+</html>
